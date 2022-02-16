@@ -36,13 +36,21 @@ The first couple sections of the paper are a general description of the problem 
 
 
 \section{Analysis}
+The GFS was designed with a few main points in mind. 1: servers were built over commodity hard drives; constant instance failures were expected. 2: They knew their file system use case: big files where writes are mostly appendages. 3: they were serving a system to themselves, so clients could be trusted and they could optimise for this.
 
+What they had was a single master server with several chunk (worker) servers actually handling data storage and transmission. The master job was facilitating communication between clients and the data they were after, guaranteeing consistency by keeping a lock on name mutation (that were always atomic) and keeping log of its own works. Systems (both master and chunks) were designed for fast recovery by storing their state periodically. They even mention not differentiating normal from abnormal termination when restarting.
 
+The file system kept chunk consistency by versioning those and marking inconsistent old ones as "stale", being ignored mutations and apt for garbage collection. For reliability and availability, chucks were replicated among different servers and hack, where more critical or used chunks were bumped to be more often replicated. Master periodically broadcast chunk checksums requests, being able to spot corruption and swiftly handle it. Google claims GFS fully met their need at the time and signalise that entities with similar use cases could make good use of the technology.
 
 
 \section{Conclusion}
 
+A few considerations about reading this article today; We live under the shadow of "The Cloud" in the third decade of this century. Talking about a centralised master/workers architecture sounds like an outcry for trouble; that is why it is important to emphasise that we must read it in the early '00s timeframe, at the end of the web's infancy.
 
+2003 was the worse point of the dot-com bubble-burst aftermatch. We can assume this is related to the clever way they enforce reliability over commodity and fail prone hard drives. 
+They had to move fast, and they could not spare the work hours required for maintaining a complex system.
+
+We see a young company trying to prove itself in this expanding new world that was the web, a company growing at a manifold speed at the brink of an IPO proposing a solution for its own internal data store and serving. Google was not looking for scaleability or maintenance or cost optimal solutions but a balance between all of those.
 
 
 \bibliographystyle{sbc}
