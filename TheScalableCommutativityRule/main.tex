@@ -1,0 +1,53 @@
+% Based on:
+% https://v1.overleaf.com/latex/templates/vcu-math-490-review-of-an-interesting-article/smwgtrztrnsn.pdf
+% and https://www.overleaf.com/latex/templates/sbc-conferences-template/blbxwjwzdngr
+
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+
+\usepackage{graphicx,url}
+
+%\usepackage[brazil]{babel}   
+\usepackage[utf8]{inputenc}  
+
+\sloppy
+
+\title{The Scalable Commutativity Rule: Designing Scalable Software for Multicore Processors Review}
+
+\author{Thiago A. Sposito\inst{1} }
+
+
+\address{Departamento de Ciência da Computacão Universidade Federal de Minas Gerais (UFMG)}
+
+\begin{document} 
+
+\maketitle
+
+
+\section{Introduction}
+The Scalable Commutativity Rule: Designing Scalable Software for Multicore Processors \cite{clements2015scalable} introduces the reader to the concept that having commutable interface operations on a system is enough to assert its scalability. The authors go on arguments and constraint loosening to support this and present us COMMUTER. This tool helps the construction of such commutable system interfaces and sv6 (a POSIX-like system built under this concept).
+
+
+\section{Summary} 
+Sections 1 and 2 introduce the concepts worked later in the article and give a quick run over related work. Section 3 is all about logical proofs of commutativity and multi-core scaling correlation. The following section eases us into POSIX interfaces and how those could be made commutable when they are commonly not. Section 6 exposes COMMUTER and its sub-tools: Analyzer, TESTGEN and MTRACE. Section 6 is a broader discussion about POSIX system interfaces and how those could be/were redesigned with commutativity in mind. Finally, we have a section presenting benchmarks comparisons to validate scalability claims empirically. Finally, we have the article conclusion.
+
+
+\section{Analysis}
+The article claims to be the first to associate this idea of commutativity with multi-core scaling. An analogy with the mathematical idea of commutation helps grasp the main idea, although it is essential to understand that it is too rigorous to be used in this context. Because of that, we will be working with a SIM commutativity concept that is state dependant, interface-based and monotonic. In practice, the authors assume that a system interface scales if its operations can access memory without conflicts. Another critical aspect to understand is their claim: what is said is that when an interface commutes, there is a scalable solution, but obviously, there will be several implementations of such interface using that solution that would not.
+
+When designing system interfaces with scalability in mind, the article highlight a few broad strokes to have in mind; avoiding compound operations(like in fork-exec), embracing non-determinism (like in unless there is a need returning a random item is better than a determined one (like the smallest, for example), and weak ordering and asynchronous release of resources.
+
+To put all those ideas in practice, the authors created COMMUTER, a chainable set of three tools to aid the design of commutable system interfaces. Those three being: Analyzer, an automation tool that takes an interface written in a symbolic variant of Python and outputs an exhaustive set of commutative conditions. Those conditions can be used by TESTGEN, the second tool of the chain; it can build tests cases using these conditions. With those test cases at hand, a developer can implement a solution for the proposed interface and use MTRACE loaded with such tests in conjunction with the proposed implementation to be used in a virtualized environment in QEMU to get conflicting memory access.
+
+This tool comes in handy to test our current systems and design better ones in the future.
+
+\section{Conclusion}
+Since Moore's Law began to give signs of failure, we knew that we would rely on horizontal growing with code parallel execution when unable to scale vertically. It is well known that a linear expansion of executions would bring a faster-growing level of complexity, and in that regard, COMMUTER comes in very hand to tame this. The article is relatively recent, from 2015, so any fruition of such ideas and tools in mainstream systems is still to become evident; it seems an absolute path forward as we see the number of machine cores increasing every year.
+
+
+
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+\end{document}
