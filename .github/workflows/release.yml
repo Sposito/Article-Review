@@ -28,6 +28,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       
+      - name: Rename latexmkrc file
+        run: .mv latexmkrc_ci latexmkrc
+        
       - uses: xu-cheng/latex-action@v2
         with:
           root_file: "*/main.tex"
