@@ -44,4 +44,6 @@ jobs:
         with: 
           name: documents
           path: ./**/*.pdf
+          if: always()
+
           
