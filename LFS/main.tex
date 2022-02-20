@@ -26,30 +26,21 @@
 
 
 \section{Introduction}
-
-The Google File System is an article written in 2003 by Sanjay Ghemawat, Howard Gobioff, and Shun-Tak Leung \cite{ghemawat2003google}. The three of them were Google's employees back in the time.
-
-By the time of publication, google was a five years old company with around 800 permanent employees \cite{google_coorp_info} and annual revenue of around 1 billion dollars. 2003 was the year prior to the company's IPO\cite{katje_2020}. Therefore, it was in their best interest to promote how this company was growth capable without significant scale frictions. This article proposes a distributed file system designed to serve the company internally.
+The Design and Implementation of a Log-Structured File
+System is an article from 1992. Mendel Rosenblum (VMWare founder) and John Ousterhout (TCL/Tk creator) are the authors. This paper proposes a novel approach based on writing log-like long strands of data at once to maximize hardware write bandwidth and discuss its drawbacks and proposed mitigation methods.
 
 \section{Summary} 
-The first couple sections of the paper are a general description of the problem and their take on tackling it, including their assumptions and proposed architecture. The third section is all about how the system's different components and stakeholders interact with each other. It presents the control/data flows and responsibilities. The following section is a more in-depth description of Master/Workers architectures, presenting the design choices for dealing with their forecast bottlenecks in scalability. Section 5 presents the reader on system reliability and mechanisms to enforce it. The following two sections are respectively objective and subjective observations and analyses of the system. The final sections are comparisons with related works conclusions and acknowledgements. 
+After the introduction in Section 1, the authors discuss the current approach in file systems back in the time. Section 3 present the log-structured file system, its advantages and potential pitfalls. The following Section discusses crash recovery in this file system; section 5 is about benchmarks and performance analysis. Section 6 will discuss related work from where LFS borrowed ideas. Furthermore, finally, we have the conclusion section.
 
 
 \section{Analysis}
-The GFS was designed with a few main points in mind. 1: servers were built over commodity hard drives; constant instance failures were expected. 2: They knew their file system use case: big files where writes are mostly appendages. 3: they were serving a system to themselves, so clients could be trusted and they could optimise for this.
+The LFS is based on the premise that hard drive speeds would grow slower than the CPU speeds and memory capacity\cite{walter2005kryder}. In particular, about memory, the authors predicted that writes would dominate disk traffic with increased real estate for caching. The notion of logs was not new, as it was already a common technique used to speed up crash recovery; the novelty here is using it as a permanent storage format in the hard drive.
+In order to take maximum advantage of disk writes, this file system needs access to large, not fragmented extensions on the disk. Here it uses a couple of techniques for bookkeeping using a cleaver algorithm capable of treating data with different levels of ephemerality with distinct policies when performing data compression and reallocation in the cleaning phase.
 
-What they had was a single master server with several chunk (worker) servers actually handling data storage and transmission. The master job was facilitating communication between clients and the data they were after, guaranteeing consistency by keeping a lock on name mutation (that were always atomic) and keeping log of its own works. Systems (both master and chunks) were designed for fast recovery by storing their state periodically. They even mention not differentiating normal from abnormal termination when restarting.
-
-The file system kept chunk consistency by versioning those and marking inconsistent old ones as "stale", being ignored mutations and apt for garbage collection. For reliability and availability, chucks were replicated among different servers and hack, where more critical or used chunks were bumped to be more often replicated. Master periodically broadcast chunk checksums requests, being able to spot corruption and swiftly handle it. Google claims GFS fully met their need at the time and signalise that entities with similar use cases could make good use of the technology.
-
+Those policies are decided based on the write cost, which is calculated by the reason of the total amount of bytes read and written by the new amount of data in bytes to be written. In order to achieve the highest performance, the algorithm will try to make most segments nearly full, giving a few empty or nearly empty segments to the cleaner work.
 
 \section{Conclusion}
-
-A few considerations about reading this article today; We live under the shadow of "The Cloud" in the third decade of this century \cite{kazmi2016impact}. Talking about a centralised master/workers architecture sounds like an outcry for trouble; that is why it is important to emphasise that we must read it in the early '00s timeframe, at the dawn of commercial internet future\cite{leiner2009brief}.
-
-The year of 2003 was the worse point of the dot-com bubble-burst aftermatch\cite{delong2006short} and also the year prior its IPO. We can assume this is related to the clever way they enforce reliability over commodity and fail prone hard drives. They had to move fast, and they could not spare the work hours required for maintaining a complex system.
-
-We see a young company trying to prove itself in this expanding new world that was the web, a company growing at a manifold speed at the brink of an IPO \cite{fleischer2006branding} proposing a solution for its own internal data store and serving. Google was not looking for scaleability or maintenance or cost optimal solutions but a balance between all of those that could fulfill their own needs.
+In a nutshell, LFS works on the premise of getting large amounts of that cached and later perming a single large I/O operation to get the most hardware throughput\cite{rosenblum1992design}. That is, although easier said than done, cleaver and somewhat complicated algorithms were needed in order to make this viable, taking faster processors and memory to its advantage. This was a pretty neat idea, but maybe too radical by the time as it was a profound shift in file system paradigm\cite{tweedie1998journaling}. 
 
 
 \bibliographystyle{sbc}
