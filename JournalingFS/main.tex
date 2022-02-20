@@ -13,7 +13,7 @@
 
 \sloppy
 
-\title{The Google File System Review}
+\title{Journaling the Linux ext2fs Filesystem Review}
 
 \author{Thiago A. Sposito\inst{1} }
 
@@ -27,30 +27,28 @@
 
 \section{Introduction}
 
-The Google File System is an article written in 2003 by Sanjay Ghemawat, Howard Gobioff, and Shun-Tak Leung \cite{ghemawat2003google}. The three of them were Google's employees back in the time.
+In this paper, Journaling the Linux ext2fs file system, author Stephan C. Tweedie describes a transactional-based file system he was working on in the late nineties\cite{tweedie1998journaling}; the file system, as mentioned earlier, revolves around the concept of journaling. We are about to read how this proposition could speed up system crash recoveries without significant changes to the Linux file system from that epoch.
 
-By the time of publication, google was a five years old company with around 800 permanent employees \cite{google_coorp_info} and annual revenue of around 1 billion dollars. 2003 was the year prior to the company's IPO\cite{katje_2020}. Therefore, it was in their best interest to promote how this company was growth capable without significant scale frictions. This article proposes a distributed file system designed to serve the company internally.
-
-\section{Summary} 
-The first couple sections of the paper are a general description of the problem and their take on tackling it, including their assumptions and proposed architecture. The third section is all about how the system's different components and stakeholders interact with each other. It presents the control/data flows and responsibilities. The following section is a more in-depth description of Master/Workers architectures, presenting the design choices for dealing with their forecast bottlenecks in scalability. Section 5 presents the reader on system reliability and mechanisms to enforce it. The following two sections are respectively objective and subjective observations and analyses of the system. The final sections are comparisons with related works conclusions and acknowledgements. 
-
+\section{Summary}
+The article is quite fun and fluid to read. It follows an intuitive flow: introduces us to the theme, reviews current Linux FS implementations, and discusses why crash recovery was becoming an issue. From there, it jumps right on Design ideas and principles on the Journaling File System and more in-depth descriptions of the journals and how it handles transactions. By the end, it discusses performance issues and workarounds. Finally, we have an overview of the project's current status and proposed future work ending in the paper conclusion.
 
 \section{Analysis}
-The GFS was designed with a few main points in mind. 1: servers were built over commodity hard drives; constant instance failures were expected. 2: They knew their file system use case: big files where writes are mostly appendages. 3: they were serving a system to themselves, so clients could be trusted and they could optimise for this.
+This article described the Journaling File system and was published amid its development. The issue trying to be addressed here is machine Availability, which was beginning to become problematic during the system recovering from caches, which was growing at the same pace as disk capacity increases.
 
-What they had was a single master server with several chunk (worker) servers actually handling data storage and transmission. The master job was facilitating communication between clients and the data they were after, guaranteeing consistency by keeping a lock on name mutation (that were always atomic) and keeping log of its own works. Systems (both master and chunks) were designed for fast recovery by storing their state periodically. They even mention not differentiating normal from abnormal termination when restarting.
+The author sets three main objectives for his proposed FS; performance should be comparable with current ext2fs, it should also be compatible with existing applications, not breaking any compatibility, and finally, it should be as reliable as it used to be.
 
-The file system kept chunk consistency by versioning those and marking inconsistent old ones as "stale", being ignored mutations and apt for garbage collection. For reliability and availability, chucks were replicated among different servers and hack, where more critical or used chunks were bumped to be more often replicated. Master periodically broadcast chunk checksums requests, being able to spot corruption and swiftly handle it. Google claims GFS fully met their need at the time and signalise that entities with similar use cases could make good use of the technology.
+We are then presented with the concept of atomicity, borrowed from databases. It ensures consistency by making operations binary where they can either complete successfully or fail gracefully. From there comes the idea of a journal itself, a lodger where every atomic transaction is described before execution and marked as complete by its end. In other words: the journal is an area of the disk with reserved inodes, where it annotates metadata.
 
+The nice thing about this is, as we can see by this description, no change to the underlying file system was required since the journals are just an appendage on top of it.
+
+As we just discussed here, much of this idea of journaling is borrowed from databases. However, we must observe two key differences; there was no concept of midway transaction abortions; they are all supposed to happen. Moreover, they are short-lived, which helps avoid collisions.
+
+Collisions can occur when cyclic dependencies occur in consecutive journal logs. The solution presented is creating a copy of the buffer owned by the old transaction and will be committed by the journal as usual. Once that transaction commits, the buffer is deleted.
+
+Finally, the author discusses a few features to be added to the system, such as journal of journals compressing, optimizations to support networked file systems, and improvements to allow the journal to handle multiple file systems.
 
 \section{Conclusion}
-
-A few considerations about reading this article today; We live under the shadow of "The Cloud" in the third decade of this century \cite{kazmi2016impact}. Talking about a centralised master/workers architecture sounds like an outcry for trouble; that is why it is important to emphasise that we must read it in the early '00s timeframe, at the dawn of commercial internet future\cite{leiner2009brief}.
-
-The year of 2003 was the worse point of the dot-com bubble-burst aftermatch\cite{delong2006short} and also the year prior its IPO. We can assume this is related to the clever way they enforce reliability over commodity and fail prone hard drives. They had to move fast, and they could not spare the work hours required for maintaining a complex system.
-
-We see a young company trying to prove itself in this expanding new world that was the web, a company growing at a manifold speed at the brink of an IPO \cite{fleischer2006branding} proposing a solution for its own internal data store and serving. Google was not looking for scaleability or maintenance or cost optimal solutions but a balance between all of those that could fulfill their own needs.
-
+In retrospect, we see a proposal that ended up in Linux and BSD kernels, so we can conclude it ended delivering upon its promises: a reliable way of speeding up systems recoveries with no significant performance losses. All this without breaking compatibility current file systems, what probably, more than anything, ended up giving it its entrance ticket to the kernel.
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
