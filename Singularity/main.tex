@@ -1,0 +1,56 @@
+% Based on:
+% https://v1.overleaf.com/latex/templates/vcu-math-490-review-of-an-interesting-article/smwgtrztrnsn.pdf
+% and https://www.overleaf.com/latex/templates/sbc-conferences-template/blbxwjwzdngr
+
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+
+\usepackage{graphicx,url}
+
+%\usepackage[brazil]{babel}   
+\usepackage[utf8]{inputenc}  
+
+\sloppy
+
+\title{The Singularity System Review}
+
+\author{Thiago A. Sposito\inst{1} }
+
+
+\address{Departamento de Ciência da Computacão Universidade Federal de Minas Gerais (UFMG)}
+
+\begin{document} 
+
+\maketitle
+
+
+\section{Introduction}
+
+In The Singularity System Review \cite{larus2010singularity}, published in Communications of the ACM, a magazine directed for broader a public, we have a nice overview
+
+\section{Summary}
+
+
+\section{Analysis}
+This article described the Journaling File system and was published amid its development. The issue trying to be addressed here is machine Availability, which was beginning to become problematic during the system recovering from caches, which was growing at the same pace as disk capacity increases.
+
+The author sets three main objectives for his proposed FS; performance should be comparable with current ext2fs, it should also be compatible with existing applications, not breaking any compatibility, and finally, it should be as reliable as it used to be.
+
+We are then presented with the concept of atomicity, borrowed from databases. It ensures consistency by making operations binary where they can either complete successfully or fail gracefully. From there comes the idea of a journal itself, a lodger where every atomic transaction is described before execution and marked as complete by its end. In other words: the journal is an area of the disk with reserved inodes, where it annotates metadata.
+
+The nice thing about this is, as we can see by this description, no change to the underlying file system was required since the journals are just an appendage on top of it.
+
+As we just discussed here, much of this idea of journaling is borrowed from databases. However, we must observe two key differences; there was no concept of midway transaction abortions; they are all supposed to happen. Moreover, they are short-lived, which helps avoid collisions.
+
+Collisions can occur when cyclic dependencies occur in consecutive journal logs. The solution presented is creating a copy of the buffer owned by the old transaction and will be committed by the journal as usual. Once that transaction commits, the buffer is deleted.
+
+Finally, the author discusses a few features to be added to the system, such as journal of journals compressing, optimizations to support networked file systems, and improvements to allow the journal to handle multiple file systems.
+
+\section{Conclusion}
+In retrospect, we see a proposal that ended up in Linux and BSD kernels, so we can conclude it ended delivering upon its promises: a reliable way of speeding up systems recoveries with no significant performance losses. All this without breaking compatibility current file systems, what probably, more than anything, ended up giving it its entrance ticket to the kernel.
+
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+\end{document}
