@@ -27,28 +27,17 @@
 
 \section{Introduction}
 
-In The Singularity System Review \cite{larus2010singularity}, published in Communications of the ACM, a magazine directed for broader a public, we have a nice overview
+In The Singularity System Review \cite{larus2010singularity}, published in Communications of the ACM, a magazine directed for broader a public, we have a nice overview of an Operating System born to debunk C's dominance in the field.
 
 \section{Summary}
+Because of the format, this was the less structured paper of all. The article begins with a description o key points and goals description. It further makes a case for using higher-level languages as it presents us their tailored solution addressing it. It then exposes the case about performance, advocating that higher-level languages are capable, in some specific cases, of having comparable or even superior performance. It continues on some discussion about safety before finally wrapping it all out with their conclusions and achievements with this project.
 
 
 \section{Analysis}
-This article described the Journaling File system and was published amid its development. The issue trying to be addressed here is machine Availability, which was beginning to become problematic during the system recovering from caches, which was growing at the same pace as disk capacity increases.
-
-The author sets three main objectives for his proposed FS; performance should be comparable with current ext2fs, it should also be compatible with existing applications, not breaking any compatibility, and finally, it should be as reliable as it used to be.
-
-We are then presented with the concept of atomicity, borrowed from databases. It ensures consistency by making operations binary where they can either complete successfully or fail gracefully. From there comes the idea of a journal itself, a lodger where every atomic transaction is described before execution and marked as complete by its end. In other words: the journal is an area of the disk with reserved inodes, where it annotates metadata.
-
-The nice thing about this is, as we can see by this description, no change to the underlying file system was required since the journals are just an appendage on top of it.
-
-As we just discussed here, much of this idea of journaling is borrowed from databases. However, we must observe two key differences; there was no concept of midway transaction abortions; they are all supposed to happen. Moreover, they are short-lived, which helps avoid collisions.
-
-Collisions can occur when cyclic dependencies occur in consecutive journal logs. The solution presented is creating a copy of the buffer owned by the old transaction and will be committed by the journal as usual. Once that transaction commits, the buffer is deleted.
-
-Finally, the author discusses a few features to be added to the system, such as journal of journals compressing, optimizations to support networked file systems, and improvements to allow the journal to handle multiple file systems.
+Not happy about cursing the world once with one operating system, Microsoft back in the late 00s was working in another, that time luckily with research purposes in mind. All jokes aside, Singularity seems to be an odd idea that worked quite well for what it was worth. The key idea was to investigate if using a safer language for systems programming was viable. It does follow the concept of a micro-kernel with any and everything responsibility in the system being very modular. The whole system was supposed to run on a lightweight version of Microsoft's runtime. More critical pieces would be written in Sing#, a dialect of C# tailored for fast execution, not compromising in type and memory safety. It manages its process differently, relying less on hardware enforce safety towards software managed isolation, what they call "SIPs" for the software-isolated processes. That said system is capable of using hardware security to give an extra layer of protection and isolation. Although Sing# for critical parts of the system can be compiled to native machine code, most of its applications run on top of given runtime, requiring it to be written with that target in mind using languages from "DotNet" family-like C# or Visual Basic. They seem to be very confident in their benchmarks and praise the system a lot at the paper's conclusion.
 
 \section{Conclusion}
-In retrospect, we see a proposal that ended up in Linux and BSD kernels, so we can conclude it ended delivering upon its promises: a reliable way of speeding up systems recoveries with no significant performance losses. All this without breaking compatibility current file systems, what probably, more than anything, ended up giving it its entrance ticket to the kernel.
+Despite their claims of performance and safety, we so far have not heard of any commercial product that follows Singularioty's path. Microsoft is well-known for killing projects, and it might not be in their best interest to have any doubt cast upon Windows dominance. Also worth mentioning that around the time of publishing the said article, new systems capable languages like Rust\cite{matsakis2014rust} and later Swift\cite{goodwill2015swift} got much traction showing that it was possible to have zero cost safe abstractions, which might have impacted the impact any Sing# future. Either way, it is not everyday Microsoft gives me a good impression, and Singularity was one of those few moments. I do no doubt that even it never seeing the light of day as a fully matured OS, it did help improve the company's overall ecosystem.
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
