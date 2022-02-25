@@ -1,4 +1,4 @@
-% Based on:
+  % Based on:
 % https://v1.overleaf.com/latex/templates/vcu-math-490-review-of-an-interesting-article/smwgtrztrnsn.pdf
 % and https://www.overleaf.com/latex/templates/sbc-conferences-template/blbxwjwzdngr
 
@@ -13,7 +13,7 @@
 
 \sloppy
 
-\title{ Review}
+\title{RadixVM: Scalable address spaces for multithreaded applications Review}
 
 \author{Thiago A. Sposito\inst{1} }
 
@@ -24,14 +24,11 @@
 
 \maketitle
 
-
-\section{Introduction}
-
 \section{Analysis}
+Radix VM \cite{clements2013radixvm} is a memory virtualisation system designed to optimise multithreaded applications by assuring that the virtual memory system only will be involved if operations are in overlapping memory regions. Besides custom procedures to avoid cache line movement and a novel reference counting approach, it does it by better managing TLB invalidations, keeping a page table for every core, and relying on smart custom tree-like data structure to avoid locks altogether. 
 
 \section{Conclusion}
-
-\bibliographystyle{sbc}
+After tests with the Metis MapReduce Library and an exhaustive set of benchmarks that stresses virtual memory operations, Radix proved itself as a reasonable solution to help applications being able to trust the underlying system to provide fast memory access.
 \bibliography{sbc-template}
 
 \end{document}
