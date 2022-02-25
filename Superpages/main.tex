@@ -1,0 +1,44 @@
+% Based on:
+% https://v1.overleaf.com/latex/templates/vcu-math-490-review-of-an-interesting-article/smwgtrztrnsn.pdf
+% and https://www.overleaf.com/latex/templates/sbc-conferences-template/blbxwjwzdngr
+
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+
+\usepackage{graphicx,url}
+
+%\usepackage[brazil]{babel}   
+\usepackage[utf8]{inputenc}  
+
+\sloppy
+
+\title{Practical, transparent operating system support for superpages Review}
+
+\author{Thiago A. Sposito\inst{1} }
+
+
+\address{Departamento de Ciência da Computação Universidade Federal de Minas Gerais (UFMG)}
+
+\begin{document} 
+
+\maketitle
+
+
+\section{Introduction}
+Moder stock processors usually support somewhat large memory pages called superpages. Although very useful, it does create some challenges for the operating system in order to manage them efficiently; this article looks into solving this issue \cite{navarro2002practical}.
+\section{Analysis}
+TLB coverage could not keep up with memory accelerating size increases. This led to critical bottlenecks being imposed by TLB misses; addressing this problem, those before mentioned superpages were able to mitigate the problem bringing performance boots up to 30\% \cite{kandiraju2002characterizing}.
+
+As a drawback, it does increase applications footprint and higher paging traffic, not to mention harder to solver fragmentation issues.
+
+The proposed solution orbits around the idea of the occurrence of a page fault; it triggers the policy of finding the biggest aligned page observing that it includes the faulting page, do not overlap other pages and respects the end of the object.
+
+Benchmarks focused on paging intensive activity and included: SP, FFTW, POvRay ray tracer, CINT2000 for integers, CFP2000 for floating-point crunching, Matrix a 1000x1000 matrix transposer, among others.
+
+\section{Conclusion}
+Observed results not only with frequently delivered performance benefits of 30-60\% as proved itself quite resilient to some ill-fated cases. The article highlights sustained benefits under heavy workloads and minimal overhead. 
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+\end{document}
