@@ -13,7 +13,7 @@
 
 \sloppy
 
-\title{ Review}
+\title{Memory resource management in VMware ESX server Review}
 
 \author{Thiago A. Sposito\inst{1} }
 
@@ -26,10 +26,18 @@
 
 
 \section{Introduction}
-
+VMware ESX is a commercial solution designed to multiplex hardware resources among virtual machines efficiently. \cite{waldspurger2002memory}
 \section{Analysis}
+This paper focus on novelty changes, back in the time, introduced to handle memory sharing better. Among those, we can highlight a technique for reclaiming less valuable pages, called ballooning. It also introduces a penality for idle memory usage. Finally, they explore some page sharings and remapping techniques tailored to avoid redundancy and copying overheads.
+
+Ballooning is the less obvious and the most exciting technique from the ones mentioned above. It consists of the host OS injecting a ballon module that acts as a memory device for the guest. Once loaded, it will establish a private communication channel between the host and the guest os.
+
+When the host needs to reclaim memory, it issues inflation on the ballon by pinning physical pages, inducing a memory pressure on the guest os, which starts its native routines to manage memory better, activate swaps and so on.
+
+Conversely, if the host wants to give memory back to the host OS, it can simply deallocate those pages.
 
 \section{Conclusion}
+By the results, we can see significant gains in memory availability and performance gains. It does cause particular caution when no adverse effects are clearly described, which is somewhat familiar in papers describing commercial solutions.
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
