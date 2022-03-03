@@ -1,0 +1,46 @@
+% Based on:
+% https://v1.overleaf.com/latex/templates/vcu-math-490-review-of-an-interesting-article/smwgtrztrnsn.pdf
+% and https://www.overleaf.com/latex/templates/sbc-conferences-template/blbxwjwzdngr
+
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+
+\usepackage{graphicx,url}
+
+%\usepackage[brazil]{babel}   
+\usepackage[utf8]{inputenc}  
+
+\sloppy
+
+\title{Shenango: Achieving High CPU Efficiency for Latency-sensitive Datacenter Workloads Review}
+
+\author{Thiago A. Sposito\inst{1} }
+
+
+\address{Departamento de Ciência da Computação Universidade Federal de Minas Gerais (UFMG)}
+
+\begin{document} 
+
+\maketitle
+
+
+\section{Introduction}
+This paper is a tutorial that invites the reader to learn about fast packet processing, how they are presented to the extended Barkley Packer Filter, and a couple of hooks: eXpress Data Paths (XDP) and Traffic Control(TC). The paper seems friendly for the "uninitiated", covering the main concepts, architectures, and practical uses and showing a good amount of hands-on code. \cite{vieira2020fast}
+\section{Analysis}
+After introductions, the article presents the Original BPF from 1992. It describes its origins as a kernel packet filtering tool running bytecode transferred to kernel space. BPF stands for both the instruction set and the execution environment.
+This trail paper describes the extended version of BPF, introduced on Linux kernel 2.5 in 2011. We can cite some of its new features: increase in register numbers registers width increase to 64bit and a stack of 512 bytes and support for C like function calls. eBPF uses a restricted dialect of C, with changes made mainly to allow safety verifications that must be done just before JIT compilation.
+
+Later on, the article goes on the kernel networking layer and describe two hooks that the paper will use in the tutorial: XDP, the lowest level of the network stack in the kernel. For handling package transmission not supported by XDP, the Traffic Control Hook is presented. 
+
+From here article gives the reader a few examples, with descriptions and diagrams. It describes a TCP filter, a user/kernel interaction example, and coordinating TC and XDP using the eBPF. 
+
+After some more discussion about tooling and other platforms that make use of eBPF, it finalizes with the summarization of some projects that makes use of eBPF.
+
+\section{Conclusion}
+The article presents some theoretical and practical aspects of eBPF in network space, mainly related to packet processing. IT also gives the reader a good overview and understanding of how eBPF can unlock some flexibility in a needlessly static kernel area as it is the networking. I finished the article with the impression eBPF has the potential to do with networking what General Purpose GPU programming did for graphics.
+
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+\end{document}

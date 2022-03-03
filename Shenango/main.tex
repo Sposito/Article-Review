@@ -1,0 +1,48 @@
+% Based on:
+% https://v1.overleaf.com/latex/templates/vcu-math-490-review-of-an-interesting-article/smwgtrztrnsn.pdf
+% and https://www.overleaf.com/latex/templates/sbc-conferences-template/blbxwjwzdngr
+
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+
+\usepackage{graphicx,url}
+
+%\usepackage[brazil]{babel}   
+\usepackage[utf8]{inputenc}  
+
+\sloppy
+
+\title{Shenango: Achieving High CPU Efficiency for Latency-sensitive Datacenter Workloads Review}
+
+\author{Thiago A. Sposito\inst{1} }
+
+
+\address{Departamento de Ciência da Computação Universidade Federal de Minas Gerais (UFMG)}
+
+\begin{document} 
+
+\maketitle
+
+
+\section{Introduction}
+Shenango is a system designed to address CPU wastage on latency-critical servers. It does so by close watching application core allocations in very fine granularity from a dedicated component kept running at all times on this dedicated core.\cite{ousterhout2019shenango}
+
+\section{Analysis}
+The authors consider CPU efficiency as the actual processor time used in application-level workloads instead of busy spinning and context switching and other systems' typical overheads. They propose that by dedicating a core for doing very fine-grained supervision of core allocation of the application process, like in 5    \mu seconds
+opposed to 50-10 milliseconds coarse granularity seen in solutions like IX and Arachne. This dedicated privileged component is called the IOKernel.
+
+The IOKernel main job is to decide how many cores to allocate for an incoming application and later decide which ones to do so. To determine the necessity of giving new cores, it controls congestion by watching the queue occupancy of active kthreads.
+
+Also, because IOkernel knows which core belongs to each application, it can steer packets directly to suitable cores. Its runtime has its own IP and mac addresses, and those can be quickly located by hash mapping those MAC addresses. The runtime also incentivises run-to-completion, allowing uthreads to run uninterrupted in most cases.
+
+The IOKernel makes use of DPDK for fast access to the NICS in user space\cite{dpdk}.
+\section{Conclusion}
+The authors describe the IOKernel as capable of supporting packet rates to 6.5 million/second. Although its successor Caladan \cite{fried2020caladan} is capable of even higher rates by employing multiple IOKernels, one per NUMA machine sockets.
+
+Still, Shenango is a giant leap forward, proving that a system can use CPU cores much more efficiently and become even more resilient against burst loads by fine-grain control of application core allocation.
+
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+\end{document}
